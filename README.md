@@ -10,7 +10,7 @@ Stores todos in a basic text file on disk (probably in the working directory).
 - [X] Option to reload todos from disk
 - [X] Option to create new todos
 - [X] Option to edit existing todos
-- [ ] Option to mark todos as complete
+- [X] Option to mark todos as complete
 - [ ] Option to delete todos
 
 ## Stretch goals

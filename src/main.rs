@@ -89,6 +89,11 @@ fn edit_todo(list: &mut Vec<Todo>, idx: usize) {
    todo.content = new_content;
 }
 
+fn complete_todo(list: &mut Vec<Todo>, idx: usize) {
+   let mut todo: &mut Todo = &mut list[idx];
+   todo.completed = !todo.completed;
+}
+
 fn get_todo_completed_str(todo: &Todo) -> &str {
    return match todo.completed {
       true => "X",
@@ -132,6 +137,12 @@ fn main() -> std::io::Result<()> {
       print_command_list();
       input = get_input("Choose a command:");
       match input.as_str() {
+         "c" => {
+            let index = get_input("Mark which todo as complete?");
+            // start index from 1
+            let idx: usize = index.parse::<usize>().unwrap() - 1;
+            complete_todo(&mut list, idx);
+         },
          "e" => {
             let index = get_input("Edit which todo?");
             // display indexes start at 1, so we need to -1 to get an array index
