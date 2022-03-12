@@ -11,7 +11,7 @@ Stores todos in a basic text file on disk (probably in the working directory).
 - [X] Option to create new todos
 - [X] Option to edit existing todos
 - [X] Option to mark todos as complete
-- [ ] Option to delete todos
+- [X] Option to delete todos
 
 ## Stretch goals
 

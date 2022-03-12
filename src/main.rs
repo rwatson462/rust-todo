@@ -94,6 +94,10 @@ fn complete_todo(list: &mut Vec<Todo>, idx: usize) {
    todo.completed = !todo.completed;
 }
 
+fn delete_todo(list: &mut Vec<Todo>, idx: usize) {
+   list.remove(idx);
+}
+
 fn get_todo_completed_str(todo: &Todo) -> &str {
    return match todo.completed {
       true => "X",
@@ -115,6 +119,7 @@ fn print_command_list() {
    println!("  q: quit");
    println!("  e: edit a todo");
    println!("  c: toggle completeness of a todo");
+   println!("  d: delete a todo");
    println!("  n: create new todo");
    println!("  r: reload list of todos");
    println!("  s: save todo list to disk");
@@ -142,6 +147,12 @@ fn main() -> std::io::Result<()> {
             // start index from 1
             let idx: usize = index.parse::<usize>().unwrap() - 1;
             complete_todo(&mut list, idx);
+         },
+         "d" => {
+            let index = get_input("Edit which todo?");
+            // display indexes start at 1, so we need to -1 to get an array index
+            let idx: usize = index.parse::<usize>().unwrap() - 1;
+            delete_todo(&mut list, idx);
          },
          "e" => {
             let index = get_input("Edit which todo?");
