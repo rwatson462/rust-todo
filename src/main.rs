@@ -72,20 +72,27 @@ fn get_input(prompt: &str) -> String {
    return input.trim().to_string();
 }
 
+fn get_todo_index_from_user(list: &Vec<Todo>, message: &str) -> usize {
+   let stringdex = get_input(message);
+   // start index from 1
+   let index: usize = stringdex.parse::<usize>().unwrap() - 1;
+
+   // todo revisit this and see if we can provide a more helpful interaction
+   if index >= list.len() {
+      panic!("Error, requested todo number not valid");
+   }
+   return index;
+}
+
 fn create_new_todo() -> Todo {
    let todo_content = get_input("Enter the todo contents:");
    return Todo::new(todo_content, "".to_string());
 }
 
 fn edit_todo(list: &mut Vec<Todo>, idx: usize) {
-   // todo add check that idx is valid
    let mut todo: &mut Todo = &mut list[idx];
-
-   // show todo contents to user
    println!("Editing '{}'", todo.content);
-   // get new contents
    let new_content = get_input("Enter new content for this todo:");
-   // save contents
    todo.content = new_content;
 }
 
@@ -143,21 +150,15 @@ fn main() -> std::io::Result<()> {
       input = get_input("Choose a command:");
       match input.as_str() {
          "c" => {
-            let index = get_input("Mark which todo as complete?");
-            // start index from 1
-            let idx: usize = index.parse::<usize>().unwrap() - 1;
+            let idx = get_todo_index_from_user(&list, "Mark which todo as complete?");
             complete_todo(&mut list, idx);
          },
          "d" => {
-            let index = get_input("Edit which todo?");
-            // display indexes start at 1, so we need to -1 to get an array index
-            let idx: usize = index.parse::<usize>().unwrap() - 1;
+            let idx = get_todo_index_from_user(&list, "Delete which todo?");
             delete_todo(&mut list, idx);
          },
          "e" => {
-            let index = get_input("Edit which todo?");
-            // display indexes start at 1, so we need to -1 to get an array index
-            let idx: usize = index.parse::<usize>().unwrap() - 1;
+            let idx = get_todo_index_from_user(&list, "Edit which todo?");
             edit_todo(&mut list, idx);
          },
          "n" => {
@@ -165,9 +166,7 @@ fn main() -> std::io::Result<()> {
             list.push(todo);
          },
          "s" => {
-            println!("Saving...");
             save_todo_list_to_file(&mut list, "todos.list");
-            println!("Done");
          },
          "r" => {
             list.clear();
