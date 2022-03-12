@@ -23,13 +23,6 @@ impl Todo {
          completed: completed_bool
       }
    }
-
-   fn clone(&self) -> Self {
-      Todo {
-         content: self.content.clone(),
-         completed: self.completed.clone()
-      }
-   }
 }
 
 fn clear_screen() {
@@ -84,15 +77,16 @@ fn create_new_todo() -> Todo {
    return Todo::new(todo_content, "".to_string());
 }
 
-fn edit_todo(todo: Todo) -> Todo {
+fn edit_todo(list: &mut Vec<Todo>, idx: usize) {
+   // todo add check that idx is valid
+   let mut todo: &mut Todo = &mut list[idx];
+
    // show todo contents to user
    println!("Editing '{}'", todo.content);
    // get new contents
    let new_content = get_input("Enter new content for this todo:");
    // save contents
    todo.content = new_content;
-   // return todo
-   return todo;
 }
 
 fn get_todo_completed_str(todo: &Todo) -> &str {
@@ -117,16 +111,19 @@ fn print_command_list() {
    println!("  e: edit a todo");
    println!("  c: toggle completeness of a todo");
    println!("  n: create new todo");
+   println!("  r: reload list of todos");
    println!("  s: save todo list to disk");
 }
 
 fn main() -> std::io::Result<()> {
 
+   const TODO_FILENAME: &str = "todos.list";
+
    // this is the "global" list of todos
-   let mut list = Vec::new();
+   let mut list: Vec<Todo> = Vec::new();
 
    // load list of todos from disk
-   load_todo_list_from_file(&mut list, "todos.list");
+   load_todo_list_from_file(&mut list, TODO_FILENAME);
 
    let mut input = String::new();
    while input != "q" {
@@ -137,9 +134,9 @@ fn main() -> std::io::Result<()> {
       match input.as_str() {
          "e" => {
             let index = get_input("Edit which todo?");
-            let idx: usize = index.parse().unwrap();
-            let existing_todo: Todo = list[idx-1];
-            let edited_todo = edit_todo(existing_todo);
+            // display indexes start at 1, so we need to -1 to get an array index
+            let idx: usize = index.parse::<usize>().unwrap() - 1;
+            edit_todo(&mut list, idx);
          },
          "n" => {
             let todo: Todo = create_new_todo();
@@ -149,7 +146,11 @@ fn main() -> std::io::Result<()> {
             println!("Saving...");
             save_todo_list_to_file(&mut list, "todos.list");
             println!("Done");
-         }
+         },
+         "r" => {
+            list.clear();
+            load_todo_list_from_file(&mut list, TODO_FILENAME);
+         },
          "q" => {},
          _ => {
             println!("Invalid command given, stop being silly!");
@@ -157,15 +158,6 @@ fn main() -> std::io::Result<()> {
       }
    }
 
-
-   // allow the user to add a todo
-   // create_new_todo(&mut list);
-   // create_new_todo(&mut list);
-   // create_new_todo(&mut list);
-
-   println!("Saving...");
-   // save_todo_list_to_file(&mut list, "todos.list");
-   println!("Done");
 
    Ok(())
 }
