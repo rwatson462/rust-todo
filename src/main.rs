@@ -11,22 +11,9 @@ struct Todo {
    // date_due: err...
 }
 
-impl Todo {
-   fn new(content: String, completed: String) -> Self {
-      let completed_bool = match completed.as_str() {
-         "X" => true,
-         _ => false
-      };
-
-      Todo {
-         content: content,
-         completed: completed_bool
-      }
-   }
-}
 
 fn clear_screen() {
-   print!("{esc}c", esc = 27 as char)
+   //print!("{esc}c", esc = 27 as char)
 }
 
 fn create_file_if_not_exists(filename: &str) {
@@ -48,7 +35,13 @@ fn load_todo_list_from_file(list: &mut Vec<Todo>, filename: &str) {
    for line in reader.lines() {
       let unwrapped = line.unwrap();
       let todo_parts: Vec<&str> = unwrapped.split(":").collect();
-      let todo = Todo::new(todo_parts[1].to_string(), todo_parts[0].to_string());
+      let todo = Todo {
+         completed: match todo_parts[0] {
+            "X" => true,
+            _ => false
+         },
+         content: todo_parts[1].to_string()
+      };
       list.push(todo);
    }
 }
@@ -86,7 +79,10 @@ fn get_todo_index_from_user(list: &Vec<Todo>, message: &str) -> usize {
 
 fn create_new_todo() -> Todo {
    let todo_content = get_input("Enter the todo contents:");
-   return Todo::new(todo_content, "".to_string());
+   return Todo{
+      completed: false,
+      content: todo_content
+   };
 }
 
 fn edit_todo(list: &mut Vec<Todo>, idx: usize) {
