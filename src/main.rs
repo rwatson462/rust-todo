@@ -100,11 +100,8 @@ impl TodoManager {
          Ok(file) => file
       };
    
-      // todo should we be iterating over the list inside the manager?
-      // or would it be better to have manager control this?
       for todo in &self.list {
-         // todo why am I unwrapping this result?
-         writeln!(file, "{}:{}", todo.completed_str(), todo.content).unwrap();
+         writeln!(file, "{}:{}", todo.completed_str(), todo.content).ok();
       }
    }
 }
@@ -113,7 +110,7 @@ impl TodoManager {
  * Prints a character sequence that clears the terminal screen
  */
 fn clear_screen() {
-   print!("{esc}c", esc = 27 as char)
+   //print!("{esc}c", esc = 27 as char)
 }
 
 /**
@@ -160,18 +157,6 @@ fn get_todo_index_from_user(message: &str, max_index: usize) -> usize {
 }
 
 /**
- * Requests a title from the user and returns a Todo object
- * @complete
- */
-fn create_new_todo() -> Todo {
-   let todo_content: String = get_input("Enter the todo contents:");
-   return Todo {
-      completed: false,
-      content: todo_content.to_string()
-   };
-}
-
-/**
  * Requests a new title from the user, amends the given todo and stores the updated version
  * @param index the array index to amend
  */
@@ -180,7 +165,7 @@ fn edit_todo(manager: &mut TodoManager, index: usize) {
    println!("Editing '{}'", old_todo.content);
    let new_content: String = get_input("Enter new content for this todo:");
    let new_todo = Todo {
-      content: new_content.to_string(),
+      content: new_content,
       ..old_todo
    };
    manager.update_todo(index, new_todo);
@@ -190,7 +175,7 @@ fn print_todo_list(manager: &TodoManager) {
    let mut index = 1;
    for todo in &manager.list {
       let completed_str = todo.completed_str();
-      println!("{}: [{}] >> {}", index, completed_str, todo.content);
+      println!("{:2}: [{}] >> {}", index, completed_str, todo.content);
       index += 1;
    }
 }
@@ -234,7 +219,11 @@ fn main() -> std::io::Result<()> {
             edit_todo(&mut manager, idx);
          },
          "n" => {
-            let todo: Todo = create_new_todo();
+            let todo_content: String = get_input("Enter the todo contents:");
+            let todo: Todo = Todo {
+               completed: false,
+               content: todo_content
+            };
             manager.add_todo(todo);
          },
          "s" => {
