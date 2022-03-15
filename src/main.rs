@@ -5,6 +5,7 @@ use std::path::Path;
 use std::io::BufReader;
 use std::io::prelude::*;
 
+#[derive(Clone)]
 struct Todo {
    completed: bool,
    content: String
@@ -17,13 +18,6 @@ impl Todo {
          true => "X",
          _ => " "
       };
-   }
-
-   fn clone(&self) -> Todo {
-      return Todo {
-         completed: self.completed.clone(),
-         content: self.content.clone()
-      }
    }
 }
 
